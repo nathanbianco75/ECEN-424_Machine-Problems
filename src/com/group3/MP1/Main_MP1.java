@@ -37,6 +37,7 @@ public class Main_MP1 {
                 arg1_input = input.nextLine();
                 try {
                     arg1 = Float.parseFloat(arg1_input + 'f');
+                    break;
                 }
                 catch (Exception e) {
                     continue;
@@ -47,6 +48,7 @@ public class Main_MP1 {
                 arg2_input = input.nextLine();
                 try {
                     arg2 = Float.parseFloat(arg2_input + 'f');
+                    break;
                 }
                 catch (Exception e) {
                     continue;
