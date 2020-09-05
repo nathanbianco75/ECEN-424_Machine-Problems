@@ -28,3 +28,4 @@ hs_err_pid*
 /.idea/project-template.xml
 /.idea/vcs.xml
 ECEN_424_MP1.iml
+/bin/

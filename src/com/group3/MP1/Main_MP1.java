@@ -6,13 +6,12 @@ public class Main_MP1 {
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        // Calculator mycalc = new Calculator();
-        // mycalc.setname("Group 3");
-        String mycalc = "Group 3"; // TODO: delete this
+        Calculator mycalc = new Calculator();
+        mycalc.setname("Group 3");
 
         while (true) {
             // Welcome user to Calculator and take user input
-            System.out.println("\nWelcome to the Calculator designed by " + mycalc /*TODO: change this*/ + ".\n"
+            System.out.println("\nWelcome to the Calculator designed by " + mycalc.getname() + ".\n"
                 + "Enter 'A' to Add, 'S' to Subtract, 'M' to Multiply, or 'Q' to Quit.");
             String user_choice = input.nextLine();
 
@@ -57,18 +56,15 @@ public class Main_MP1 {
             float ans;
             if (user_choice.contains("A")) {
                 result_type = "sum";
-                // ans = mycalc.addition(arg1, arg2);
-                ans = arg1 + arg2; // TODO: delete this
+                ans = mycalc.addition(arg1, arg2);
             }
             else if (user_choice.contains("S")) {
                 result_type = "difference";
-                // ans = mycalc.subtraction(arg1, arg2);
-                ans = arg1 - arg2; // TODO: delete this
+                ans = mycalc.subtraction(arg1, arg2);
             }
             else {
                 result_type = "product";
-                // ans = mycalc.multiplication(arg1, arg2);
-                ans = arg1 * arg2; // TODO: delete this
+                ans = mycalc.multiplication(arg1, arg2);
             }
             System.out.println("\nThe " + result_type + " of " + arg1 + " and " + arg2 + " is " + ans);
         }
