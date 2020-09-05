@@ -16,14 +16,14 @@ public class Main_MP1 {
             String user_choice = input.nextLine();
 
             // if user chooses to quit
-            if (user_choice.contains("Q")) {
+            if (user_choice.equals("Q")) {
                 // User chose to quit
                 break;
             }
             // else if user's input is invalid
-            else if (!(user_choice.contains("A")
-                    || user_choice.contains("S")
-                    || user_choice.contains("M"))) {
+            else if (!(user_choice.equals("A")
+                    || user_choice.equals("S")
+                    || user_choice.equals("M"))) {
                 continue;
             }
 
@@ -54,11 +54,11 @@ public class Main_MP1 {
             // Perform calculation and print result
             String result_type;
             float ans;
-            if (user_choice.contains("A")) {
+            if (user_choice.equals("A")) {
                 result_type = "sum";
                 ans = mycalc.addition(arg1, arg2);
             }
-            else if (user_choice.contains("S")) {
+            else if (user_choice.equals("S")) {
                 result_type = "difference";
                 ans = mycalc.subtraction(arg1, arg2);
             }
