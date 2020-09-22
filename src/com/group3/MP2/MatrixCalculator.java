@@ -17,7 +17,7 @@ public class MatrixCalculator {
         for(int i = 0; i < A.get_num_rows(); i+=A.get_num_rows()/5) {
             Thread thread = new Thread(new MatrixThread(i, A.get_num_rows()/5));
             threads.add(thread);
-            System.out.println(i);
+            // System.out.println(i); // used for debugging purposes
         }
         // Start all threads
         for (Thread thread:threads) {
@@ -45,7 +45,6 @@ public class MatrixCalculator {
 
         public void run() {
             double[][] rows = new double[A.get_num_rows()][B.get_num_columns()];
-
 
             for (int r = index; r < index+length; r++) {
                 rows[r] = A.getRow(r);
