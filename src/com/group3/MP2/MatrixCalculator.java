@@ -1,5 +1,4 @@
 package com.group3.MP2;
-
 import java.util.ArrayList;
 
 public class MatrixCalculator {
@@ -7,18 +6,28 @@ public class MatrixCalculator {
     protected Matrix A;
     protected Matrix B;
     protected Matrix C;
-    private ArrayList<Thread> threads;
+    private ArrayList<Thread> threads = new ArrayList<>();
 
-    public Matrix threadedMultiply(Matrix a, Matrix b) {
+    public Matrix threadedMultiply(Matrix a, Matrix b) throws InterruptedException {
         A = a;
         B = b;
         C = Matrix.generateZeros(A.get_num_rows(), B.get_num_columns());
 
         // Create 5 threads with appropriate indices passed to runnables
-
+        for(int i = 0; i < A.get_num_rows(); i+=A.get_num_rows()/5) {
+            Thread thread = new Thread(new MatrixThread(i, A.get_num_rows()/5));
+            threads.add(thread);
+            System.out.println(i);
+        }
         // Start all threads
+        for (Thread thread:threads) {
+            thread.start();
+        }
 
         // Join all threads
+        for (Thread thread:threads) {
+            thread.join();
+        }
 
         return C;
     }
@@ -35,20 +44,20 @@ public class MatrixCalculator {
         }
 
         public void run() {
-            double[][] rows;
+            double[][] rows = new double[A.get_num_rows()][B.get_num_columns()];
 
-            /*
-            for r = index to index+length
-			    add A.getRow(r) to rows
 
-			Matrix A_part = new Matrix(A.get_num_rows(), A.get_num_columnsrows)
-			Matrix C_part = Matrix.multiply(A_part, B)
+            for (int r = index; r < index+length; r++) {
+                rows[r] = A.getRow(r);
+            }
 
-			for r = index to index+length
-				C.getRow(r) = C_part.get(r-index)
+			Matrix A_part = new Matrix(A.get_num_rows(), B.get_num_columns(), rows);
+			Matrix C_part = Matrix.multiply(A_part, B);
 
-            return
-             */
+			for (int r = index; r < index+length; r++) {
+                C.setRow(C_part.getRow(r), r);
+            }
+
         }
 
     }

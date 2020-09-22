@@ -31,7 +31,7 @@ public class Matrix {
     }
 
     // Return the Matrix product of A and B
-    public Matrix multiply(Matrix A, Matrix B) {
+    public static Matrix multiply(Matrix A, Matrix B) {
         return A;
     }
 
@@ -64,6 +64,11 @@ public class Matrix {
     public double[] getRow(int r) {
         // TODO: this could throw an index out of bounds exception!
         return rows[r];
+    }
+
+    public void setRow(double[] r, int index) {
+        // TODO: this could throw an index out of bounds exception!
+        rows[index] = r;
     }
 
     public void print() {

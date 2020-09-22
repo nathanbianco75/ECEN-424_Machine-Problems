@@ -12,8 +12,13 @@ public class Main_MP2 {
         B.print();
 
         // Calculate C = A*B using multiple threads and Print C
-        Matrix C = new MatrixCalculator().threadedMultiply(A, B);
-        System.out.println("\nMatrix C = A*B:");
-        C.print();
+        try {
+            Matrix C = new MatrixCalculator().threadedMultiply(A, B);
+            System.out.println("\nMatrix C = A*B:");
+            C.print();
+        }
+        catch(InterruptedException e){
+            System.err.println("Caught InterruptedException: " + e.getMessage());
+        }
     }
 }
