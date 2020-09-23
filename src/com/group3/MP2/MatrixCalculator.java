@@ -44,17 +44,17 @@ public class MatrixCalculator {
         }
 
         public void run() {
-            double[][] rows = new double[A.get_num_rows()][B.get_num_columns()];
+            double[][] rows = new double[length][B.get_num_columns()];
 
-            for (int r = index; r < index+length; r++) {
-                rows[r] = A.getRow(r);
+            for (int r = 0; r < length; r++) {
+                rows[r] = A.getRow(r+index);
             }
 
-			Matrix A_part = new Matrix(A.get_num_rows(), B.get_num_columns(), rows);
+			Matrix A_part = new Matrix(length, B.get_num_columns(), rows);
 			Matrix C_part = Matrix.multiply(A_part, B);
 
-			for (int r = index; r < index+length; r++) {
-                C.setRow(C_part.getRow(r), r);
+			for (int r = 0; r < length; r++) {
+                C.setRow(C_part.getRow(r), r+index);
             }
 
         }

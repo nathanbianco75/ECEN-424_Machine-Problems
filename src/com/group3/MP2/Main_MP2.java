@@ -12,11 +12,17 @@ public class Main_MP2 {
         System.out.println("\nRandom Matrix B:");
         B.print(1);
 
+        //To compare time b/w normal and threads
+        //long startTime = System.nanoTime();
         // Calculate C = A*B the normal way, and Print C
         Matrix C = Matrix.multiply(A,B);
         System.out.println("\nNormal Matrix C = A*B:");
         C.print(1);
+        //long endTime = System.nanoTime();
+        //System.out.println("Normal Took "+(endTime - startTime) + " ns");
 
+        //To compare time b/w normal and threads
+        //startTime = System.nanoTime();
         // Calculate C = A*B using multiple threads and Print C
         try {
             C = new MatrixCalculator().threadedMultiply(A, B);
@@ -28,5 +34,7 @@ public class Main_MP2 {
             System.out.println("\n\nMatrix Multi-Threaded Calculation canceled early. Quitting...");
             System.exit(-1);
         }
+        //endTime = System.nanoTime();
+        //System.out.println("Threads Took "+(endTime - startTime) + " ns");
     }
 }
