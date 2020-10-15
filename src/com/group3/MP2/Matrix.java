@@ -72,6 +72,22 @@ public class Matrix {
         return new Matrix(nrows, ncolumns, rows);
     }
 
+    // Return a new Matrix made up of random ints
+    public static Matrix generateRandomInt(int nrows, int ncolumns) {
+        double[][] rows = new double[nrows][ncolumns];
+        Random rand = new Random();
+
+        for (int row = 0; row < nrows; row++) {
+            for (int column = 0; column < ncolumns; column++) {
+                // Choose a pseudorandom int my_rand, such that: 0.00 <= my_rand < (1.00 * MAX_RAND)
+                int my_rand = (int)(rand.nextDouble() * MAX_RAND);
+                rows[row][column] = my_rand;
+            }
+        }
+        return new Matrix(nrows, ncolumns, rows);
+    }
+
+
     // Return a new Matrix made up of given value
     public static Matrix generateByValue(int nrows, int ncolumns, double value) {
         double[][] rows = new double[nrows][ncolumns];
@@ -111,9 +127,10 @@ public class Matrix {
     }
 
     public void print(int round) {
-        // round = (<= -1: no rounding), (0: truncate decimal), (1 - inf: round this many decimals)
+        // round = (<= -2: no rounding), (-1: print without '|'), (0: truncate decimal), (1 - inf: round this many decimals)
         for (int row = 0; row < num_rows; row++) {
-            System.out.print("|\t ");
+            if (round != -1)
+                System.out.print("|\t ");
             for (int column = 0; column < num_columns; column++) {
                 if (round <= -1)
                     System.out.print(rows[row][column] + "\t ");
@@ -122,9 +139,29 @@ public class Matrix {
                 else
                     System.out.print(Math.floor(rows[row][column] * Math.pow(10, round)) / Math.pow(10, round) + "\t ");
             }
-            System.out.println('|');
+            if(round != -1)
+                System.out.println('|');
+            else
+                System.out.println();
         }
     }
+
+    public void print1(int round) {
+        // round = (<= -1: no rounding), (0: truncate decimal), (1 - inf: round this many decimals)
+        for (int row = 0; row < num_rows; row++) {
+            //System.out.print("|\t ");
+            for (int column = 0; column < num_columns; column++) {
+                if (round <= -1)
+                    System.out.print(rows[row][column] + "\t ");
+                else if (round == 0)
+                    System.out.print(((int) rows[row][column]) + "\t ");
+                else
+                    System.out.print(Math.floor(rows[row][column] * Math.pow(10, round)) / Math.pow(10, round) + "\t ");
+            }
+            System.out.println();
+        }
+    }
+
 
     // num_rows Getter
     public int get_num_rows() {
