@@ -46,11 +46,11 @@ public class Main_MP3_Client {
         System.out.println("(Type \"\\disconnect to exit)");
         while (true) {
             String userIn = input.nextLine();
+            writer.println(userIn);
+            writer.flush();
             if (userIn.equals("\\disconnect")) {
                 break;
             }
-            writer.println(userIn);
-            writer.flush();
         }
     }
 
