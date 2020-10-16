@@ -15,7 +15,15 @@ public class Main_MP3_Client {
     private Thread listenThread;
 
     public void run(String serverIP, String serverPort) {
-        int port = Integer.parseInt(serverPort);
+        int port = 0;
+
+        try {
+            port = Integer.parseInt(serverPort);
+        }
+        catch (Exception e) { //Error if it's not a number
+            System.out.println("The given port number is not a valid input. Exiting Server...");
+            System.exit(1);
+        }
 
         // try to establish connection to the server:
         try {
