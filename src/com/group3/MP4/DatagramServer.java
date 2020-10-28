@@ -26,8 +26,7 @@ public class DatagramServer {
         String message;
         try {
             port = Integer.parseInt(args[0]);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             System.out.println("\nError: invalid port. Please enter a positive integer.");
             e.printStackTrace();
             System.exit(-1);
@@ -60,13 +59,11 @@ public class DatagramServer {
         DatagramSocket socket = null;
         try {
             socket = new DatagramSocket(port);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("\nError: the following port is invalid: port: " + port);
             e.printStackTrace();
             System.exit(-1);
-        }
-        catch (SocketException e) {
+        } catch (SocketException e) {
             System.out.println("\nError: failed to open a socket on port: " + port);
             e.printStackTrace();
             System.exit(-1);
@@ -76,6 +73,7 @@ public class DatagramServer {
         // Wait for a client to send a packet and retrieve client's address and port
         DatagramPacket packet = new DatagramPacket( new byte[PACKETSIZE], PACKETSIZE ) ;
         try {
+            System.out.println("\nWaiting to receive a packet from a client...");
             socket.receive( packet ) ;
         } catch (IOException e) {
             System.out.println("\nError: exception when attempting to a receive a packet on the socket.");
@@ -85,50 +83,67 @@ public class DatagramServer {
         port = packet.getPort();
 
 
-        // Send messages to client
+        // Start loop to send messages to client
         int nextMessage= 0;
-        int lastACK = -1;
-        while (true) {
+        while (nextMessage < numMessages) {
             byte[] data = messages[nextMessage].getBytes();
             packet = new DatagramPacket(data, data.length, address, port);
 
-            // TODO send packet, wait for ack, timeout if needed, break when nextMessage > numMessages
-            break;
+            // Send message segment
+            try {
+                socket.send(packet);
+                System.out.println("\nTo " + packet.getAddress() + " " + packet.getPort() + " - Sent: " + new String(packet.getData()));
+            } catch (IOException e) {
+                System.out.println("\nError: exception when attempting to send packet with contents:\n" +
+                        packet.getAddress() + " " + packet.getPort() + ": " + new String(packet.getData()));
+                e.printStackTrace();
+            }
+
+            // Wait for an ACK
+            try {
+                // Set a receive timeout, 2000 milliseconds
+                socket.setSoTimeout(2000);
+                socket.receive(packet);
+                System.out.println("\nFrom " + packet.getAddress() + " " + packet.getPort() + " - Received: " + new String(packet.getData()));
+            } catch (SocketException e) {
+                // Send timeout has occurred, need to resend the last packet
+                continue;
+            } catch (IOException e) {
+                System.out.println("\nError: exception when attempting to a receive a packet on the socket.");
+                e.printStackTrace();
+            }
+
+            // Validate received ACK
+            String ack = new String(packet.getData());
+            int next_trial = -1;
+            try {
+                // ACK = "ACK: " + trial + " Please send: " + (trial + 1);
+                next_trial = Integer.parseInt(ack.substring(ack.length()-1));
+                if (next_trial <= 0 || next_trial > nextMessage+1) {
+                    System.out.println("\nError: invalid ACK. Next trial("+next_trial+") should be greater than 0 and less than " + (nextMessage + 2));
+                    socket.close();
+                    System.exit(-1);
+                }
+            } catch (NumberFormatException e) {
+                // Invalid ACK has been received, terminating the program
+                System.out.println("\nError: invalid ACK. Last character should have been an integer.");
+                e.printStackTrace();
+                socket.close();
+                System.exit(-1);
+            }
+            if (next_trial < nextMessage + 1) {
+                // Old ACK received, discarding and resending last packet
+                System.out.println("\nReceived ACK is old - discarding it and resending last packet...");
+                continue;
+            }
+
+            // ACK is good. Update next_message
+            nextMessage++;
         }
 
 
-
+        // Cleanup
         if (socket != null)
             socket.close() ;
-
-        /*
-        try {
-            // Convert the argument to ensure that is it valid
-            int port = Integer.parseInt( args[0] ) ;
-
-            // Construct the socket
-            DatagramSocket socket = new DatagramSocket( port ) ;
-
-            System.out.println( "The server is ready..." ) ;
-
-            for( ;; ) {
-                // Create a packet
-                DatagramPacket packet = new DatagramPacket( new byte[PACKETSIZE], PACKETSIZE ) ;
-
-                // Receive a packet (blocking)
-                socket.receive( packet ) ;
-
-                // Print the packet
-                System.out.println( packet.getAddress() + " " + packet.getPort() + ": " + new String(packet.getData()) ) ;
-
-                // Return the packet to the sender
-                socket.send( packet ) ;
-            }
-        }
-        catch( Exception e )
-        {
-            System.out.println( e ) ;
-        }
-        */
     }
 }
