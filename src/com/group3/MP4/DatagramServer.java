@@ -11,7 +11,7 @@ import java.net.* ;
 public class DatagramServer {
     private final static int PACKETSIZE = 100 ;
 
-    public static void main( String args[] ) throws UnknownHostException {
+    public static void main( String args[] ) {
 
         // Check the arguments
         if( args.length != 2 )
@@ -118,13 +118,10 @@ public class DatagramServer {
             // Validate received ACK
             data = packet.getData();
             String ack = new String(data, 0, packet.getLength());
-            //System.out.println(ack);
             int next_trial = -1;
             try {
                 // ACK = "ACK: " + trial + " Please send: " + (trial + 1);
-                //System.out.println(ack + " 1");
                 next_trial = Integer.parseInt(ack.substring(ack.length()-1));
-                //System.out.println("2");
                 if (next_trial <= 0 || next_trial > nextMessage+1) {
                     System.out.println("\nError: invalid ACK. Next trial("+next_trial+") should be greater than 0 and less than " + (nextMessage + 2));
                     socket.close();
@@ -132,10 +129,10 @@ public class DatagramServer {
                 }
             } catch (NumberFormatException e) {
                 // Invalid ACK has been received, terminating the program
-                /*System.out.println("\nError: invalid ACK. Last character should have been an integer.");
+                System.out.println("\nError: invalid ACK. Last character should have been an integer.");
                 e.printStackTrace();
                 socket.close();
-                System.exit(-1);*/
+                System.exit(-1);
             }
             if (next_trial < nextMessage + 1) {
                 // Old ACK received, discarding and resending last packet
