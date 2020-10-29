@@ -39,17 +39,17 @@ public class DatagramClient
          }
 
          // Construct the socket
-         socket = new DatagramSocket() ;
+         socket = new DatagramSocket(/*port*/) ;
 
-         // Construct the datagram packet
-         byte [] data1 = "1".getBytes() ;
-         DatagramPacket packet1 = new DatagramPacket( data1, data1.length, host, port ) ;
+         // Send packet to begin message transmission from server
+         byte [] welcome = "Hello Server".getBytes() ;
+         DatagramPacket packet = new DatagramPacket( welcome, welcome.length, host, port ) ;
+         socket.send(packet);
 
-         socket.send(packet1);
 
          //Buffer to receive the message
          byte[] buffer = new byte[65536];
-         DatagramPacket packet = new DatagramPacket( buffer, buffer.length) ;
+         packet = new DatagramPacket( buffer, buffer.length) ;
 
 
          System.out.println("Waiting...");
@@ -59,9 +59,11 @@ public class DatagramClient
          int trial = 0;
          int receivedNum = 0;
          String message = "";
-         String ACK = "ERROR";
+         String ACK = "";
          Random rand = new Random();
 
+         boolean to_break = false;
+         boolean message_received = false;
          while(true) {
             //Buffer to receive the message
             socket.receive(packet);
@@ -88,24 +90,19 @@ public class DatagramClient
             }
 
             //Fail safe check
-            if(receivedNum == trial) {
+            if(!message_received && receivedNum == trial) {
                //Outputs the received data
                System.out.println(packet.getAddress().getHostAddress() + ":" + packet.getPort() + "(" + trial + ") - " + currentString);
 
                //Add current string to full message if trial is not 0
                if(trial!=0)
-                     message = message + currentString;
+                  message = message + currentString;
 
                //Checks if it's the last message
                if(trial == numMessages){
                   ACK = "ACK: " + trial + " Received all messages.";
-                  //resets stuff
-                  trial = 0;
-                  System.out.println("Complete Message: " + message);
-                  message = "";
-                  DatagramPacket newPacket = new DatagramPacket(ACK.getBytes(), ACK.getBytes().length, packet.getAddress(), packet.getPort());
-                  socket.send(newPacket);
-                  socket.close();
+                  System.out.println("\nComplete Message: " + message + "\n");
+                  message_received = true;
                }
                else {
                   ACK = "ACK: " + trial + " Please send: " + (trial + 1);
@@ -115,20 +112,22 @@ public class DatagramClient
             else {
                System.out.println("Message " + trial + " has already been received. Discarding data. ");
             }
+            if (message_received)
+               to_break = true;
 
             //CHANGE to true if you want unreliableAck, otherwise change it to false
-            if(false) {
+            if(true) {
                int ran = rand.nextInt(100);
-
-               System.out.println(ran);
 
                //50 50 chance
                if(ran > 50) {
                   DatagramPacket newPacket = new DatagramPacket(ACK.getBytes(), ACK.getBytes().length, packet.getAddress(), packet.getPort());
                   socket.send(newPacket);
                }
+
                else {
-                  //System.out.println("Ack was not sent for " + trial + ". Please try again.");
+                  System.out.println("Ack was not sent for " + trial + ". Please try again.");
+                  to_break = false;
                }
             }
             //reliable ACK
@@ -137,25 +136,14 @@ public class DatagramClient
                socket.send(newPacket);
             }
 
-            /*// Send it
-            socket.send(packet);
-
-            // Set a receive timeout, 2000 milliseconds
-            socket.setSoTimeout(2000);
-
-            // Prepare the packet for receive
-            packet.setData(new byte[PACKETSIZE]);
-
-            // Wait for a response from the server
-            socket.receive(packet);
-
-            // Print the response
-            System.out.println(new String(packet.getData()));*/
+            if (to_break)
+               break;
          }
+         System.out.println("\nMessage transmission complete. Goodbye!");
       }
       catch( Exception e )
       {
-         System.out.println( "Exception " + e ) ;
+         System.out.println( e ) ;
       }
       finally
       {
