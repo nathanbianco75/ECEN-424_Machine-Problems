@@ -42,9 +42,10 @@ public class DatagramClient
          socket = new DatagramSocket(port) ;
 
          // Construct the datagram packet
-         //byte [] data = "Hello Server".getBytes() ;
-         //DatagramPacket packet = new DatagramPacket( data, data.length, host, port ) ;
+         //byte [] data1 = "1".getBytes() ;
+         //DatagramPacket packet1 = new DatagramPacket( data1, data1.length, host, port ) ;
 
+         //socket.send(packet1);
 
          //Buffer to receive the message
          byte[] buffer = new byte[65536];
@@ -58,7 +59,7 @@ public class DatagramClient
          int trial = 0;
          int receivedNum = 0;
          String message = "";
-         String ACK = "";
+         String ACK = "ERROR";
          Random rand = new Random();
 
          while(true) {
@@ -102,6 +103,9 @@ public class DatagramClient
                   trial = 0;
                   System.out.println("Complete Message: " + message);
                   message = "";
+                  DatagramPacket newPacket = new DatagramPacket(ACK.getBytes(), ACK.getBytes().length, packet.getAddress(), packet.getPort());
+                  socket.send(newPacket);
+                  socket.close();
                }
                else {
                   ACK = "ACK: " + trial + " Please send: " + (trial + 1);
@@ -116,14 +120,15 @@ public class DatagramClient
             if(true) {
                int ran = rand.nextInt(100);
 
+               System.out.println(ran);
+
                //50 50 chance
                if(ran > 50) {
                   DatagramPacket newPacket = new DatagramPacket(ACK.getBytes(), ACK.getBytes().length, packet.getAddress(), packet.getPort());
                   socket.send(newPacket);
                }
-
                else {
-                  System.out.println("Ack was not sent for " + trial + ". Please try again.");
+                  //System.out.println("Ack was not sent for " + trial + ". Please try again.");
                }
             }
             //reliable ACK
@@ -150,7 +155,7 @@ public class DatagramClient
       }
       catch( Exception e )
       {
-         System.out.println( e ) ;
+         System.out.println( "Exception " + e ) ;
       }
       finally
       {

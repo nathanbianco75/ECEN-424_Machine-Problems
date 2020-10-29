@@ -11,7 +11,7 @@ import java.net.* ;
 public class DatagramServer {
     private final static int PACKETSIZE = 100 ;
 
-    public static void main( String args[] ) {
+    public static void main( String args[] ) throws UnknownHostException {
 
         // Check the arguments
         if( args.length != 2 )
@@ -58,7 +58,7 @@ public class DatagramServer {
         // Create server socket
         DatagramSocket socket = null;
         try {
-            socket = new DatagramSocket(port);
+            socket = new DatagramSocket();
         } catch (IllegalArgumentException e) {
             System.out.println("\nError: the following port is invalid: port: " + port);
             e.printStackTrace();
@@ -71,23 +71,23 @@ public class DatagramServer {
 
 
         // Wait for a client to send a packet and retrieve client's address and port
-        DatagramPacket packet = new DatagramPacket( new byte[PACKETSIZE], PACKETSIZE ) ;
+        /*DatagramPacket packet = new DatagramPacket( new byte[PACKETSIZE], PACKETSIZE ) ;
         try {
             System.out.println("\nWaiting to receive a packet from a client...");
             socket.receive( packet ) ;
         } catch (IOException e) {
             System.out.println("\nError: exception when attempting to a receive a packet on the socket.");
             e.printStackTrace();
-        }
-        InetAddress address = packet.getAddress();
-        port = packet.getPort();
+        }*/
+        InetAddress address = InetAddress.getLocalHost();
+        //port = packet.getPort();
 
 
         // Start loop to send messages to client
         int nextMessage= 0;
         while (nextMessage < numMessages) {
             byte[] data = messages[nextMessage].getBytes();
-            packet = new DatagramPacket(data, data.length, address, port);
+            DatagramPacket packet = new DatagramPacket(data, data.length, address, port);
 
             // Send message segment
             try {
@@ -103,6 +103,8 @@ public class DatagramServer {
             try {
                 // Set a receive timeout, 2000 milliseconds
                 socket.setSoTimeout(2000);
+                byte[] buffer = new byte[65536];
+                packet = new DatagramPacket( buffer, buffer.length) ;
                 socket.receive(packet);
                 System.out.println("\nFrom " + packet.getAddress() + " " + packet.getPort() + " - Received: " + new String(packet.getData()));
             } catch (SocketException e) {
@@ -114,11 +116,15 @@ public class DatagramServer {
             }
 
             // Validate received ACK
-            String ack = new String(packet.getData());
+            data = packet.getData();
+            String ack = new String(data, 0, packet.getLength());
+            //System.out.println(ack);
             int next_trial = -1;
             try {
                 // ACK = "ACK: " + trial + " Please send: " + (trial + 1);
+                //System.out.println(ack + " 1");
                 next_trial = Integer.parseInt(ack.substring(ack.length()-1));
+                //System.out.println("2");
                 if (next_trial <= 0 || next_trial > nextMessage+1) {
                     System.out.println("\nError: invalid ACK. Next trial("+next_trial+") should be greater than 0 and less than " + (nextMessage + 2));
                     socket.close();
@@ -126,10 +132,10 @@ public class DatagramServer {
                 }
             } catch (NumberFormatException e) {
                 // Invalid ACK has been received, terminating the program
-                System.out.println("\nError: invalid ACK. Last character should have been an integer.");
+                /*System.out.println("\nError: invalid ACK. Last character should have been an integer.");
                 e.printStackTrace();
                 socket.close();
-                System.exit(-1);
+                System.exit(-1);*/
             }
             if (next_trial < nextMessage + 1) {
                 // Old ACK received, discarding and resending last packet
