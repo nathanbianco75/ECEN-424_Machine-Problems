@@ -39,13 +39,13 @@ public class DatagramClient
          }
 
          // Construct the socket
-         socket = new DatagramSocket(port) ;
+         socket = new DatagramSocket() ;
 
          // Construct the datagram packet
-         //byte [] data1 = "1".getBytes() ;
-         //DatagramPacket packet1 = new DatagramPacket( data1, data1.length, host, port ) ;
+         byte [] data1 = "1".getBytes() ;
+         DatagramPacket packet1 = new DatagramPacket( data1, data1.length, host, port ) ;
 
-         //socket.send(packet1);
+         socket.send(packet1);
 
          //Buffer to receive the message
          byte[] buffer = new byte[65536];
@@ -117,7 +117,7 @@ public class DatagramClient
             }
 
             //CHANGE to true if you want unreliableAck, otherwise change it to false
-            if(true) {
+            if(false) {
                int ran = rand.nextInt(100);
 
                System.out.println(ran);

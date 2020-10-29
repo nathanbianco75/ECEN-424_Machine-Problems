@@ -58,7 +58,7 @@ public class DatagramServer {
         // Create server socket
         DatagramSocket socket = null;
         try {
-            socket = new DatagramSocket();
+            socket = new DatagramSocket(port);
         } catch (IllegalArgumentException e) {
             System.out.println("\nError: the following port is invalid: port: " + port);
             e.printStackTrace();
@@ -71,23 +71,23 @@ public class DatagramServer {
 
 
         // Wait for a client to send a packet and retrieve client's address and port
-        /*DatagramPacket packet = new DatagramPacket( new byte[PACKETSIZE], PACKETSIZE ) ;
+        DatagramPacket packet = new DatagramPacket( new byte[PACKETSIZE], PACKETSIZE ) ;
         try {
             System.out.println("\nWaiting to receive a packet from a client...");
             socket.receive( packet ) ;
         } catch (IOException e) {
             System.out.println("\nError: exception when attempting to a receive a packet on the socket.");
             e.printStackTrace();
-        }*/
-        InetAddress address = InetAddress.getLocalHost();
-        //port = packet.getPort();
+        }
+        InetAddress address = packet.getAddress();
+        port = packet.getPort();
 
 
         // Start loop to send messages to client
         int nextMessage= 0;
         while (nextMessage < numMessages) {
             byte[] data = messages[nextMessage].getBytes();
-            DatagramPacket packet = new DatagramPacket(data, data.length, address, port);
+            packet = new DatagramPacket(data, data.length, address, port);
 
             // Send message segment
             try {
